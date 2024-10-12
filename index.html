@@ -1,119 +1,131 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity WebGL Player | WebXR</title>
-    <link rel="shortcut icon" href="TemplateData/favicon.ico">
-    <link rel="stylesheet" href="TemplateData/style.css">
-  </head>
-  <body>
-    <div id="unity-container" class="unity-desktop">
-      <canvas id="unity-canvas" width=960 height=600></canvas>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Web XR Card</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="TemplateData/favicon.ico">
+  <link rel="stylesheet" href="TemplateData/style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="d-flex flex-column">
+  <div class="container-fluid flex-grow-1 d-flex flex-column justify-content-center align-items-center py-4">
+    <div id="message" class="text-center mb-4">
+      <h1>Happy Birthday G!</h1>
+      <p class="mb-4">Experience your fancy AR card below.</p>
+    </div>
+
+    <div class="decorative-element"></div>
+    <div class="decorative-element"></div>
+
+    <button id="viewCardButton" class="mt-4">View Card</button>
+
+    <div class="modal fade" id="instructionsModal" tabindex="-1" aria-labelledby="instructionsModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="instructionsModalLabel">How to Use the AR Card</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <ol>
+              <li>Ensure that you're using an Adroid or Quest device</li>
+              <li>Stand up</li>
+              <li>Move your phone around to scan the floor</li>
+              <li>Tap to place the card</li>
+            </ol>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="gotItButton">Got it!</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="unity-container" class="d-none">
+      <div id="unity-canvas-container">
+        <canvas id="unity-canvas"></canvas>
+      </div>
       <div id="unity-loading-bar">
         <div id="unity-logo"></div>
         <div id="unity-progress-bar-empty">
           <div id="unity-progress-bar-full"></div>
         </div>
       </div>
-      <div id="unity-warning"> </div>
-      <div id="unity-footer">
-        <div id="unity-webgl-logo"></div>
-        <div id="unity-fullscreen-button"></div>
-        <div id="unity-build-title">WebXR</div>
-      </div>
+      <div id="unity-footer"></div>
     </div>
-    <script>
-      var container = document.querySelector("#unity-container");
-      var canvas = document.querySelector("#unity-canvas");
-      var loadingBar = document.querySelector("#unity-loading-bar");
-      var progressBarFull = document.querySelector("#unity-progress-bar-full");
-      var fullscreenButton = document.querySelector("#unity-fullscreen-button");
-      var warningBanner = document.querySelector("#unity-warning");
+  </div>
 
-      // Shows a temporary message banner/ribbon for a few seconds, or
-      // a permanent error message on top of the canvas if type=='error'.
-      // If type=='warning', a yellow highlight color is used.
-      // Modify or remove this function to customize the visually presented
-      // way that non-critical warnings and error messages are presented to the
-      // user.
-      function unityShowBanner(msg, type) {
-        function updateBannerVisibility() {
-          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
-        }
-        var div = document.createElement('div');
-        div.innerHTML = msg;
-        warningBanner.appendChild(div);
-        if (type == 'error') div.style = 'background: red; padding: 10px;';
-        else {
-          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-          setTimeout(function() {
-            warningBanner.removeChild(div);
-            updateBannerVisibility();
-          }, 5000);
-        }
-        updateBannerVisibility();
-      }
+  <footer id="footer" class="w-100 text-center py-3">
+    <p class="m-0">Made by Jacques Saunders</p>
+  </footer>
 
-      var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/WebXR-gh-pages.loader.js";
-      var config = {
-        dataUrl: buildUrl + "/WebXR-gh-pages.data.unityweb",
-        frameworkUrl: buildUrl + "/WebXR-gh-pages.framework.js.unityweb",
-        codeUrl: buildUrl + "/WebXR-gh-pages.wasm.unityweb",
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+  <script>
+    var buildUrl = "Build";
+    var loaderUrl = buildUrl + "/WebXR-gh-pages.loader.js";
+    var config = {
+      dataUrl: buildUrl + "/WebXR-gh-pages.data.unityweb",
+      frameworkUrl: buildUrl + "/WebXR-gh-pages.framework.js.unityweb",
+      codeUrl: buildUrl + "/WebXR-gh-pages.wasm.unityweb",
         streamingAssetsUrl: "StreamingAssets",
-        companyName: "DefaultCompany",
-        productName: "WebXR",
-        productVersion: "0.1",
-        showBanner: unityShowBanner,
-      };
+      companyName: "DefaultCompany",
+      productName: "WebXR",
+      productVersion: "0.1",
+    };
 
-      // By default Unity keeps WebGL canvas render target size matched with
-      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
-      // Set this to false if you want to decouple this synchronization from
-      // happening inside the engine, and you would instead like to size up
-      // the canvas DOM size and WebGL render target sizes yourself.
-      // config.matchWebGLToCanvasSize = false;
+    var container = document.querySelector("#unity-container");
+    var canvas = document.querySelector("#unity-canvas");
+    var loadingBar = document.querySelector("#unity-loading-bar");
+    var progressBarFull = document.querySelector("#unity-progress-bar-full");
+    var fullscreenButton = document.querySelector("#unity-fullscreen-button");
+    var unityInstance = null;
+    
 
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        // Mobile device style: fill the whole browser client area with the game canvas:
+    loadingBar.style.display = "block";
 
-        var meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-        document.getElementsByTagName('head')[0].appendChild(meta);
-        container.className = "unity-mobile";
-        canvas.className = "unity-mobile";
-
-        // To lower canvas resolution on mobile devices to gain some
-        // performance, uncomment the following line:
-        // config.devicePixelRatio = 1;
-
-        unityShowBanner('WebGL builds are not supported on mobile devices.');
-      } else {
-        // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
-
-        canvas.style.width = "960px";
-        canvas.style.height = "600px";
-      }
-
-      loadingBar.style.display = "block";
-
-      var script = document.createElement("script");
-      script.src = loaderUrl;
-      script.onload = () => {
-        createUnityInstance(canvas, config, (progress) => {
-          progressBarFull.style.width = 100 * progress + "%";
-        }).then((unityInstance) => {
-          loadingBar.style.display = "none";
+    var script = document.createElement("script");
+    script.src = loaderUrl;
+    script.onload = () => {
+      createUnityInstance(canvas, config, (progress) => {
+        progressBarFull.style.width = 100 * progress + "%";
+      }).then((instance) => {
+        unityInstance = instance;
+        loadingBar.style.display = "none";
+        if (fullscreenButton) {
           fullscreenButton.onclick = () => {
             unityInstance.SetFullscreen(1);
           };
-        }).catch((message) => {
-          alert(message);
-        });
-      };
-      document.body.appendChild(script);
-    </script>
-  </body>
+        }
+      }).catch((message) => {
+        alert(message);
+      });
+    };
+    document.body.appendChild(script);
+
+    let viewCardButton = document.getElementById('viewCardButton');
+    let gotItButton = document.getElementById('gotItButton');
+    let instructionsModal = new bootstrap.Modal(document.getElementById('instructionsModal'));
+
+    document.addEventListener('onARSupportedCheck', function (event) {
+      viewCardButton.disabled = !event.detail.supported;
+    }, false);
+
+    viewCardButton.addEventListener('click', function (event) {
+      instructionsModal.show();
+    }, false);
+
+    gotItButton.addEventListener('click', function (event) {
+      instructionsModal.hide();
+      unityInstance.Module.WebXR.toggleAR();
+    }, false);
+  </script>
+</body>
+
 </html>
