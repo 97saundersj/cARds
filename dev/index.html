@@ -95,6 +95,15 @@
             <h6 class="fw-bold">XR Card</h6>
             <div class="border p-3 rounded bg-light">
               <div class="mb-3">
+                <label for="cardImageInput" class="form-label">Card Image</label>
+                <select class="form-select" id="cardImageInput">
+                  <option value="birthday">Birthday</option>
+                  <option value="halloween">Halloween</option>
+                  <option value="christmas">Christmas</option>
+                  <!--<option value="custom">Custom (excample)</option>-->
+                </select>
+              </div>
+              <div class="mb-3">
                 <label for="cardTopInput" class="form-label">Top Text</label>
                 <input type="text" class="form-control" id="cardTopInput" placeholder="Enter top text">
               </div>
@@ -187,12 +196,16 @@
     function openEditForm() {
         const header = getUrlParameter('header') || 'Happy Birthday!';
         const message = getUrlParameter('message') || 'Experience your AR card below.';
+
+        const cardImage = getUrlParameter('cardImage') || 'birthday';
         const cardTop = getUrlParameter('cardTop') || 'Dear John,';
         const cardMiddle = getUrlParameter('cardMiddle') || 'Have a great birthday!';
         const cardBottom = getUrlParameter('cardBottom') || 'Love Jane';
         
         document.getElementById('landingPageHeaderInput').value = header;
         document.getElementById('landingPageMessageInput').value = message;
+
+        document.getElementById('cardImageInput').value = cardImage;
         document.getElementById('cardTopInput').value = cardTop;
         document.getElementById('cardMiddleInput').value = cardMiddle;
         document.getElementById('cardBottomInput').value = cardBottom;
@@ -204,9 +217,11 @@
     function saveCardText() {
         const header = document.getElementById('landingPageHeaderInput').value;
         const message = document.getElementById('landingPageMessageInput').value;
+
         const cardTop = document.getElementById('cardTopInput').value;
         const cardMiddle = document.getElementById('cardMiddleInput').value;
         const cardBottom = document.getElementById('cardBottomInput').value;
+        const cardImage = document.getElementById('cardImageInput').value;
         
         // Update page content
         document.getElementById('landingPageHeader').textContent = header;
@@ -214,7 +229,7 @@
         
         // Update URL with new parameters
         const baseUrl = window.location.origin + window.location.pathname;
-        const newUrl = `${baseUrl}?header=${encodeURIComponent(header)}&message=${encodeURIComponent(message)}&cardTop=${encodeURIComponent(cardTop)}&cardMiddle=${encodeURIComponent(cardMiddle)}&cardBottom=${encodeURIComponent(cardBottom)}`;
+        const newUrl = `${baseUrl}?header=${encodeURIComponent(header)}&message=${encodeURIComponent(message)}&cardTop=${encodeURIComponent(cardTop)}&cardMiddle=${encodeURIComponent(cardMiddle)}&cardBottom=${encodeURIComponent(cardBottom)}&cardImage=${encodeURIComponent(cardImage)}`;
         
         // Copy link to clipboard
         navigator.clipboard.writeText(newUrl).then(() => {
@@ -231,13 +246,14 @@
 
     // Send card text to Unity once it's loaded
     function sendCardTextToUnity() {
+        const cardImage = getUrlParameter('cardImage') || 'birthday';
         const cardTop = getUrlParameter('cardTop') || '';
         const cardMiddle = getUrlParameter('cardMiddle') || '';
         const cardBottom = getUrlParameter('cardBottom') || '';
 
         if (unityInstance && (cardTop || cardMiddle || cardBottom)) {
             unityInstance.SendMessage('Card', 'UpdateCardText', 
-              JSON.stringify({ cardTop, cardMiddle, cardBottom })
+              JSON.stringify({ cardImage, cardTop, cardMiddle, cardBottom })
             );
         }
     }
@@ -245,9 +261,6 @@
     document.addEventListener('DOMContentLoaded', function() {
         const header = getUrlParameter('header');
         const message = getUrlParameter('message');
-        const cardTop = getUrlParameter('cardTop');
-        const cardMiddle = getUrlParameter('cardMiddle');
-        const cardBottom = getUrlParameter('cardBottom');
         
         if (header) {
             document.getElementById('landingPageHeader').textContent = header;
