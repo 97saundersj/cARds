@@ -54,7 +54,7 @@
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" onclick="window.location.href='index.html'">Close</button>
-            <button type="button" class="btn btn-primary" onclick="saveCardText()">Save & Generate Link</button>
+            <button type="button" class="btn btn-primary" onclick="saveCardText()">View Card & Copy Link</button>
         </div>
     </div>
 
@@ -98,8 +98,7 @@
             const cardImage = document.getElementById('cardImageInput').value;
 
             // Update URL with new parameters
-            //const baseUrl = window.location.origin + '/index.html';
-            const newUrl = `${'/index.html'}?header=${encodeURIComponent(header)}&message=${encodeURIComponent(message)}&cardTop=${encodeURIComponent(cardTop)}&cardMiddle=${encodeURIComponent(cardMiddle)}&cardBottom=${encodeURIComponent(cardBottom)}&cardImage=${encodeURIComponent(cardImage)}`;
+            const newUrl = `index.html?header=${encodeURIComponent(header)}&message=${encodeURIComponent(message)}&cardTop=${encodeURIComponent(cardTop)}&cardMiddle=${encodeURIComponent(cardMiddle)}&cardBottom=${encodeURIComponent(cardBottom)}&cardImage=${encodeURIComponent(cardImage)}`;
 
             // Copy link to clipboard
             navigator.clipboard.writeText(newUrl).then(() => {
