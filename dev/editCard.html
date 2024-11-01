@@ -71,7 +71,6 @@
         function openEditForm() {
             const header = getUrlParameter('header') || 'Happy Birthday!';
             const message = getUrlParameter('message') || 'Experience your AR card below.';
-
             const cardImage = getUrlParameter('cardImage') || 'birthday';
             const cardTop = getUrlParameter('cardTop') || 'Dear John,';
             const cardMiddle = getUrlParameter('cardMiddle') || 'Have a great birthday!';
@@ -99,8 +98,8 @@
             const cardImage = document.getElementById('cardImageInput').value;
 
             // Update URL with new parameters
-            const baseUrl = window.location.origin + '/index.html';
-            const newUrl = `${baseUrl}?header=${encodeURIComponent(header)}&message=${encodeURIComponent(message)}&cardTop=${encodeURIComponent(cardTop)}&cardMiddle=${encodeURIComponent(cardMiddle)}&cardBottom=${encodeURIComponent(cardBottom)}&cardImage=${encodeURIComponent(cardImage)}`;
+            //const baseUrl = window.location.origin + '/index.html';
+            const newUrl = `${'/index.html'}?header=${encodeURIComponent(header)}&message=${encodeURIComponent(message)}&cardTop=${encodeURIComponent(cardTop)}&cardMiddle=${encodeURIComponent(cardMiddle)}&cardBottom=${encodeURIComponent(cardBottom)}&cardImage=${encodeURIComponent(cardImage)}`;
 
             // Copy link to clipboard
             navigator.clipboard.writeText(newUrl).then(() => {
